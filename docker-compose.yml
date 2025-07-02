@@ -1,0 +1,6 @@
+services:
+  redis_storage:
+    image: redis
+    env_file: .env
+    ports:
+      - ${REDIS_PORT}:6379
