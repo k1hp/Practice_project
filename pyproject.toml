@@ -1,0 +1,26 @@
+[project]
+name = "practiceproj"
+version = "0.1.0"
+description = "bot for practice mau"
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "certifi (==2025.6.15)",
+    "charset-normalizer (==3.4.2)",
+    "dotenv (==0.9.9)",
+    "idna (==3.10)",
+    "pytelegrambotapi (==4.27.0)",
+    "python-dotenv (==1.1.1)",
+    "redis (==6.2.0)",
+    "requests (==2.32.4)",
+    "telebot (==0.0.5)",
+    "urllib3 (==2.5.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
