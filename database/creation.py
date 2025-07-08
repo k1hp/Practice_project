@@ -3,8 +3,8 @@ from sqlalchemy import text
 
 
 def create_tables(engine: Engine, logger) -> None:
-    statements = (
-        """DROP TABLE IF EXISTS users""",
+    queries = (
+        # """DROP TABLE IF EXISTS users""",
         """
         CREATE TABLE IF NOT EXISTS users (
             `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
@@ -15,7 +15,7 @@ def create_tables(engine: Engine, logger) -> None:
         """,
     )
     with engine.connect() as connection:
-        for stmt in statements:
-            connection.execute(text(stmt))
+        for query in queries:
+            connection.execute(text(query))
         connection.commit()
     logger.info("База данных очищена и создана заново")
