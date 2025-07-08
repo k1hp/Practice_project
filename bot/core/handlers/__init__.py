@@ -1,6 +1,7 @@
-from .common import navigation_handlers, laboratory
+from .common import navigation_handlers, game_handlers, information_handlers
 
 __all__ = (
     "navigation_handlers",
-    "laboratory",
+    "game_handlers",
+    "information_handlers",
 )
