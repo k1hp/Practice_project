@@ -2,19 +2,19 @@ from telebot import types, State
 from typing import Optional, Union
 from datetime import datetime
 
-from bot.config.settings import BOT, NAVIGATION_BUTTONS
+from bot.config.settings import bot, NAVIGATION_BUTTONS
 from bot.core.states.common import UserState
 from bot.core.utils.helpers import transition_need_state, transition_remove_keyboard
 
 
-@BOT.message_handler(state=UserState.echo, content_types=["text"])
+@bot.message_handler(state=UserState.echo, content_types=["text"])
 def handle_echo(message: types.Message):
     """
     Обрабатывает и выводит текст введенный пользователем
     :param message:
     :return:
     """
-    BOT.send_message(message.chat.id, text=f"Я получил сообщение {message.text}")
+    bot.send_message(message.chat.id, text=f"Я получил сообщение {message.text}")
 
 
 def make_button_handlers(
@@ -33,7 +33,7 @@ def make_button_handlers(
     """
     func = lambda message: message.text == button
 
-    @BOT.message_handler(state=current_state, func=func)
+    @bot.message_handler(state=current_state, func=func)
     def handler(message: types.Message):
         if text is None:
             transition_remove_keyboard(
@@ -60,21 +60,21 @@ button_handler_2 = make_button_handlers(
 )
 
 
-@BOT.message_handler(
+@bot.message_handler(
     state=UserState.date_time,
     func=lambda message: message.text == DATE_TIME_BUTTONS["date"],
 )
 def show_current_date(message: types.Message):
-    BOT.send_message(
+    bot.send_message(
         message.chat.id, text=datetime.today().strftime("📅 Дата: %d.%m.%Y")
     )
 
 
-@BOT.message_handler(
+@bot.message_handler(
     state=UserState.date_time,
     func=lambda message: message.text == DATE_TIME_BUTTONS["time"],
 )
 def show_current_date(message: types.Message):
-    BOT.send_message(
+    bot.send_message(
         message.chat.id, text=datetime.today().strftime("🕒 Время: %H:%M:%S")
     )
