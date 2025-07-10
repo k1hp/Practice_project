@@ -7,6 +7,10 @@ class CommonButtons:
     games = {"saper": "💣 Saper", "red_black": "Red | Black"}
 
 
+class GameButtons:
+    kmn = {"stone": "Камень", "scissors": "Ножницы", "paper": "Бумага"}
+
+
 class BalanceData:
     start: int = 100
     minimum: int = 100
@@ -16,3 +20,10 @@ class BalanceData:
 
 class CallbackDataString:
     deposit: str = "deposit"
+
+
+KMN_WIN_POSITIONS = (
+    (GameButtons.kmn["stone"], GameButtons.kmn["scissors"]),
+    (GameButtons.kmn["paper"], GameButtons.kmn["stone"]),
+    (GameButtons.kmn["scissors"], GameButtons.kmn["paper"]),
+)
