@@ -41,7 +41,7 @@ def make_button_handlers(
             )
         else:
             transition_need_state(
-                message, need_state=need_state, text=text, buttons=buttons
+                message.chat.id, need_state=need_state, text=text, buttons=buttons
             )
 
     return handler

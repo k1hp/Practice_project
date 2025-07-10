@@ -35,7 +35,7 @@ def handle_navigation(message: types.Message):
         # получение баланса отдельной функцией с кешированием
         user_balance = get_balance(message.chat.id)
         transition_need_state(
-            message,
+            message.chat.id,
             need_state=UserState.navigation,
             text=f"Navigation\nYour balance: {f"${user_balance}" if user_balance else "NOTHING"}",
             buttons=CommonButtons.navigation.values(),
