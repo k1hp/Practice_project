@@ -15,8 +15,9 @@ REDIS_PORT = int(os.getenv("REDIS_PORT"))
 states_storage = StateRedisStorage(host="localhost", port=REDIS_PORT, db=0)
 TOKEN = os.getenv("BOT_TOKEN")
 
+redis_sessions = Redis(host="localhost", port=REDIS_PORT, db=0, decode_responses=True)
 redis_cache = Redis(
-    host="localhost", port=REDIS_PORT, db=1
+    host="localhost", port=REDIS_PORT, db=1, decode_responses=True
 )  # разделяем, чтобы не путать
 
 bot = TeleBot(token=TOKEN, state_storage=states_storage)
