@@ -79,7 +79,8 @@ def get_cached_parameter(
         result = connection.execute(text(query)).first()
         if not result:
             return None
-        redis_cache.set(f"{parameter}:{chat_id}", value=result[0])
+        # redis_cache.set(f"{parameter}:{chat_id}", value=result[0])
+        update_cached_parameter(chat_id, parameter, result[0])
         return result[0]
 
 
@@ -87,3 +88,12 @@ def get_balance(chat_id: int) -> Optional[int]:
     result = get_cached_parameter(chat_id, "balance")
     if result:
         return int(result)
+
+
+def update_balance(chat_id: int, new_balance: int) -> None:
+    query = f"""UPDATE users SET balance=:balance WHERE chat_id={chat_id}"""
+    params = {"balance": new_balance}
+    with engine.connect() as connection:
+        connection.execute(query, params)
+        connection.commit()
+    update_cached_parameter(chat_id, "balance", new_balance)
