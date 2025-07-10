@@ -17,7 +17,8 @@ dependencies = [
     "redis (==6.2.0)",
     "requests (==2.32.4)",
     "telebot (==0.0.5)",
-    "urllib3 (==2.5.0)"
+    "urllib3 (==2.5.0)",
+    "sqlalchemy (>=2.0.41,<3.0.0)"
 ]
 
 
