@@ -1,9 +1,10 @@
 from telebot import types
+from telebot.types import Message
 
 from bot.config.settings import engine, redis_cache, logger
 from sqlalchemy import text
 from typing import Optional, Union
-from bot.config.config_data import START_BALANCE
+from bot.config.config_data import BalanceData
 
 
 def compile_rating_string() -> str:
@@ -29,18 +30,26 @@ def compile_rating_string() -> str:
         return string
 
 
+def generate_username(message: Message):
+    if message.from_user.username:
+        return message.from_user.username
+    # TODO убрать unique для nickname и выдавать одно имя
+    return "Anonymous"
+
+
 def add_new_user(message: types.Message) -> None:
+    # TODO проверка на то, что такого id не существует
     query = text(
         """
                  INSERT INTO users (chat_id, nickname, balance)
                  VALUES (:chat_id, :nickname, :balance)
                  """
     )
-
+    user_name = generate_username(message)
     params = {
         "chat_id": message.chat.id,
-        "nickname": message.from_user.username,
-        "balance": START_BALANCE,  # Replace with START_BALANCE
+        "nickname": user_name,
+        "balance": BalanceData.start,
     }
     with engine.connect() as connection:
         result = connection.execute(query, params)
@@ -74,5 +83,7 @@ def get_cached_parameter(
         return result[0]
 
 
-def get_balance(chat_id: int) -> Optional[str]:
-    return get_cached_parameter(chat_id, "balance")
+def get_balance(chat_id: int) -> Optional[int]:
+    result = get_cached_parameter(chat_id, "balance")
+    if result:
+        return int(result)
