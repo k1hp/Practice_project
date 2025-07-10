@@ -7,4 +7,12 @@ class CommonButtons:
     games = {"saper": "💣 Saper", "red_black": "Red | Black"}
 
 
-START_BALANCE: int = 100
+class BalanceData:
+    start: int = 100
+    minimum: int = 100
+    middle: int = 1000
+    high: int = 5000
+
+
+class CallbackDataString:
+    deposit: str = "deposit"
