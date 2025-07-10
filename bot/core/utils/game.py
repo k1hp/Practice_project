@@ -124,8 +124,6 @@ class MultiplayerSession(GameSession):
                 redis_sessions.rpush("session:" + self._game_name, *new_session)
             self._start_game(opponent=StringPlayer(string=opponent))
 
-    # defself._game_name
-
 
 class RobotSession(GameSession):
     ...

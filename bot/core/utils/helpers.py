@@ -4,8 +4,11 @@ from typing import Union, TYPE_CHECKING
 
 from telebot.types import ReplyKeyboardRemove
 
+from bot.config.config_data import CommonButtons
 from bot.config.settings import bot, logger
 from bot.core.keyboards.universal import UniversalReplyKeyboard
+from bot.core.states.common import UserState
+from database.crud import get_balance
 
 if TYPE_CHECKING:
     from bot.core.utils.game import Player
@@ -28,6 +31,16 @@ def transition_remove_keyboard(message: types.Message, need_state: State, text: 
     bot.delete_state(message.chat.id)
     bot.set_state(message.chat.id, need_state)
     bot.send_message(message.chat.id, text=text, reply_markup=ReplyKeyboardRemove())
+
+
+def exit_to_navigation(chat_id: int):
+    user_balance = get_balance(chat_id)
+    transition_need_state(
+        chat_id,
+        need_state=UserState.navigation,
+        text=f"Navigation\nYour balance: {f"${user_balance}" if user_balance else "NOTHING"}",
+        buttons=CommonButtons.navigation.values(),
+    )
 
 
 def transition_game_state(
