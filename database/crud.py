@@ -41,7 +41,7 @@ def add_new_user(message: types.Message) -> None:
     # TODO проверка на то, что такого id не существует
     query = text(
         """
-                 INSERT INTO users (chat_id, nickname, balance)
+                 INSERT OR IGNORE INTO users (chat_id, nickname, balance)
                  VALUES (:chat_id, :nickname, :balance)
                  """
     )
