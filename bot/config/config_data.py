@@ -4,12 +4,12 @@ class CommonButtons:
         "rating": "🏆 Rating",
         "profile": "🐵 Profile and Balance",
     }
-    games = {"saper": "💣 Saper", "red_black": "Red | Black"}
+    games = {"saper": "💣 Saper", "red_black": "❤️ Red | Black ♠️"}
 
 
 class GameButtons:
     kmn: dict = {"stone": "Камень", "scissors": "Ножницы", "paper": "Бумага"}
-    red_black: dict = {"red": "🔴 Красное", "black": "⚫ Черное", "green": "🟢 Зеленое"}
+    red_black: dict = {"red": "❤️ Красное", "black": "♠️ Черное", "green": "🍀 Зелёное"}
     continue_game: dict = {"accept": "Еще одну", "refuse": "Хватит"}
     exit: str = "Завершить игру"
 

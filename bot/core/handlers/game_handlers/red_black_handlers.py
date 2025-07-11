@@ -31,7 +31,7 @@ def handle_deposit(call: types.CallbackQuery):
     transition_need_state(
         call.message.chat.id,
         RedBlackState.game_process,
-        text="Сделайте ставку! Куда выпадет:\n🔴 Красное, ⚫ Чёрное или 🍀 Зелёное?",
+        text=f"Выберите куда выпадет:\n{GameButtons.red_black["red"]}, {GameButtons.red_black["black"]} или {GameButtons.red_black["green"]}?",
         buttons=GameButtons.red_black.values(),
     )
     with bot.retrieve_data(call.message.chat.id) as user_data:
