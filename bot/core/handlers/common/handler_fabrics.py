@@ -1,11 +1,54 @@
-from telebot.states import StatesGroup
+from telebot.states import StatesGroup, State
 from telebot import types
 
 from bot.config.config_data import CommonButtons, GameButtons
 from bot.config.settings import bot, logger
-from bot.core.states.common import RedBlackState
+from bot.core.states.common import RedBlackState, UserState
+from bot.core.utils.game import OnePlayerSession
 from bot.core.utils.helpers import exit_to_navigation
-from bot.core.handlers.game_handlers.red_black_handlers import red_black_handler
+
+# from bot.core.handlers.game_handlers.red_black_handlers import red_black_handler
+
+
+def make_exit_to_navigation(state_class: StatesGroup):
+    @bot.message_handler(
+        state=state_class.balance, func=lambda message: message.text == GameButtons.exit
+    )
+    def handler(message: types.Message):
+        exit_to_navigation(message.chat.id)
+
+    return handler
+
+
+exit_red_black_handler = make_exit_to_navigation(state_class=RedBlackState)
+
+
+def make_start_offline_game(
+    current_state: State, need_state: State, check_button: str, start_text: str
+):
+    @bot.message_handler(
+        state=current_state,
+        func=lambda message: message.text == check_button,
+    )
+    def handler(message: types.Message):
+        with bot.retrieve_data(message.chat.id) as data:
+            deposit = data.get("deposit")
+        OnePlayerSession(
+            bot,
+            message=message,
+            game_state=need_state,
+            start_text="Продолжаем" if deposit else start_text,
+        )
+
+    return handler
+
+
+start_red_black_handler = make_start_offline_game(
+    current_state=UserState.games,
+    need_state=RedBlackState.balance,
+    check_button=CommonButtons.games["red_black"],
+    start_text="Добро пожаловать в рулетку",
+)
 
 
 def make_continue_handlers(state_class: StatesGroup, called_function):
@@ -26,19 +69,6 @@ def make_continue_handlers(state_class: StatesGroup, called_function):
     return handler
 
 
-continue_handler_1 = make_continue_handlers(
-    state_class=RedBlackState, called_function=red_black_handler
+continue_red_black_handler = make_continue_handlers(
+    state_class=RedBlackState, called_function=start_red_black_handler
 )
-
-
-def make_exit_to_navigation(state_class: StatesGroup):
-    @bot.message_handler(
-        state=state_class.balance, func=lambda message: message.text == GameButtons.exit
-    )
-    def handler(message: types.Message):
-        exit_to_navigation(message.chat.id)
-
-    return handler
-
-
-exit_handler_1 = make_exit_to_navigation(state_class=RedBlackState)

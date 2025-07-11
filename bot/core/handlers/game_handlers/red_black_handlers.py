@@ -10,9 +10,8 @@ from bot.core.utils.helpers import (
     exit_to_navigation,
     continue_game,
 )
-from bot.core.utils.game import GameTimerSession, RobotSession
+from bot.core.utils.game import GameTimerSession, OnePlayerSession
 from bot.config.settings import bot, logger
-from bot.core.states.common import GameState
 from bot.core.keyboards.inline import InlineDepositKeyboard
 from bot.config.config_data import (
     CommonButtons,
@@ -21,22 +20,7 @@ from bot.config.config_data import (
     KMN_WIN_POSITIONS,
     BalanceData,
 )
-from database.crud import get_balance, add_new_user, update_balance
-
-
-@bot.message_handler(
-    state=UserState.games,
-    func=lambda message: message.text == CommonButtons.games["red_black"],
-)
-def red_black_handler(message: types.Message):
-    with bot.retrieve_data(message.chat.id) as data:
-        deposit = data.get("deposit")
-    RobotSession(
-        bot,
-        message=message,
-        game_state=RedBlackState.balance,
-        start_text="Продолжаем" if deposit else "Добро пожаловать в рулетку",
-    )
+from database.crud import get_balance, update_balance
 
 
 @bot.callback_query_handler(
