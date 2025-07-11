@@ -3,10 +3,10 @@ from telebot import TeleBot
 from telebot.types import Message
 from telebot.states import State
 
-from bot.config.config_data import BalanceData
+from bot.config.config_data import BalanceData, GameButtons
 from bot.config.settings import redis_sessions
 from bot.core.keyboards.inline import InlineDepositKeyboard
-from bot.core.utils.helpers import transition_game_state
+from bot.core.utils.helpers import transition_game_state, transition_need_state
 from database.crud import get_balance
 
 
@@ -65,6 +65,10 @@ class GameSession(ABC):
 
     @abstractmethod
     def _start_game(self):
+        pass
+
+    @abstractmethod
+    def _provide_deposits(self):
         pass
 
 
@@ -126,8 +130,27 @@ class MultiplayerSession(GameSession):
 
 
 class RobotSession(GameSession):
-    ...
-    # переопределим search session
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._start_game()
+
+    def _search_session(self) -> None: ...
+
+    def _provide_deposits(self) -> None:
+        self._bot.send_message(
+            self._player.chat_id,
+            text="Сделайте ставку",
+            reply_markup=InlineDepositKeyboard(chat_id=self._player.chat_id),
+        )
+
+    def _start_game(self) -> None:
+        transition_need_state(
+            self._player.chat_id,
+            self._game_state,
+            text=self._start_text,
+            buttons=(GameButtons.exit,),
+        )
+        self._provide_deposits()
 
 
 class GameTimerSession(MultiplayerSession):

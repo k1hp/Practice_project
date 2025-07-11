@@ -8,13 +8,17 @@ class CommonButtons:
 
 
 class GameButtons:
-    kmn = {"stone": "Камень", "scissors": "Ножницы", "paper": "Бумага"}
+    kmn: dict = {"stone": "Камень", "scissors": "Ножницы", "paper": "Бумага"}
+    red_black: dict = {"red": "🔴 Красное", "black": "⚫ Черное", "green": "🟢 Зеленое"}
+    continue_game: dict = {"accept": "Еще одну", "refuse": "Хватит"}
+    exit: str = "Завершить игру"
 
 
 class BalanceData:
-    start: int = 100
+    start: int = 10000
     minimum: int = 100
-    middle: int = 1000
+    middle: int = 500
+    middle_plus: int = 2500
     high: int = 5000
 
 

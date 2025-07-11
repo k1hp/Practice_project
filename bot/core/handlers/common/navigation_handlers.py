@@ -21,11 +21,12 @@ def handle_start(message: types.Message):
         bot.set_state(message.chat.id, state=UserState.navigation)
         bot.send_message(
             message.chat.id,
-            text="Добро пожаловать в бота",
+            text="🎰 Добро пожаловать! 🎲",
             reply_markup=UniversalReplyKeyboard(
                 buttons=CommonButtons.navigation.values()
             ).markup,
         )
+
     return
 
 

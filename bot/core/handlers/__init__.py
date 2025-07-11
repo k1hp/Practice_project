@@ -1,7 +1,10 @@
-from .common import navigation_handlers, game_handlers, information_handlers
+from .common import navigation_handlers, information_handlers, handler_fabrics
+from .game_handlers import kmn_handlers, red_black_handlers
 
 __all__ = (
     "navigation_handlers",
-    "game_handlers",
     "information_handlers",
+    "kmn_handlers",
+    "red_black_handlers",
+    "handler_fabrics",
 )

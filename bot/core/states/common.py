@@ -17,3 +17,8 @@ class KMNState(StatesGroup):
     balance = State()
     game_process = State()
     finish = State()  ## нужен или нет
+
+
+class RedBlackState(StatesGroup):
+    balance = State()
+    game_process = State()

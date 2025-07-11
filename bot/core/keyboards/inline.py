@@ -55,15 +55,31 @@ class InlineDepositKeyboard(types.InlineKeyboardMarkup):
         # elif abs(BalanceData.minimum - balance) <= 250:
         #     buttons = [[BalanceData.minimum,], [], []]
         # else:
-        return [
+        result = []
+        deposits = []
+        for stage in (
+            BalanceData.minimum,
+            BalanceData.middle,
+            BalanceData.middle_plus,
+            BalanceData.high,
+        ):
+            if len(deposits) == 2:
+                result.append(deposits)
+                deposits = []
+            if balance >= stage:
+                deposits.append(
+                    types.InlineKeyboardButton(
+                        text=f"${stage}",
+                        callback_data=f"{CallbackDataString.deposit}:{stage}",
+                    )
+                )
+        result.append(deposits)
+        result.append(
             [
                 types.InlineKeyboardButton(
-                    text=f"${balance}",
-                    callback_data=f"{CallbackDataString.deposit}:{balance}",
-                ),
-                types.InlineKeyboardButton(
-                    text=f"All_in",
+                    text=f"All In",
                     callback_data=f"{CallbackDataString.deposit}:{balance}",
                 ),
             ]
-        ]
+        )
+        return result

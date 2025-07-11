@@ -3,13 +3,13 @@ from typing import Optional, Union
 from datetime import datetime
 
 from bot.config.settings import bot
-from bot.config.config_data import CommonButtons
+from bot.config.config_data import CommonButtons, BalanceData
 from bot.core.states.common import UserState
 from bot.core.utils.helpers import (
     transition_need_state,
     transition_remove_keyboard,
 )
-from database.crud import compile_rating_string
+from database.crud import compile_rating_string, get_balance
 
 
 def make_button_handlers(
@@ -30,6 +30,16 @@ def make_button_handlers(
 
     @bot.message_handler(state=current_state, func=func)
     def handler(message: types.Message):
+        if (
+            button == CommonButtons.navigation["games"]
+            and get_balance(message.chat.id) < BalanceData.minimum
+        ):
+            bot.send_message(
+                message.chat.id,
+                text="Ваш баланс не позволяет играть.\nМожете пополнить его в профиле.",
+            )
+            return
+
         if need_state is None and text is not None:
             bot.send_message(message.chat.id, text=text)
         elif text is None:

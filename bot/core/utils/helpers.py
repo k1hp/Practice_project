@@ -4,7 +4,7 @@ from typing import Union, TYPE_CHECKING
 
 from telebot.types import ReplyKeyboardRemove
 
-from bot.config.config_data import CommonButtons
+from bot.config.config_data import CommonButtons, GameButtons
 from bot.config.settings import bot, logger
 from bot.core.keyboards.universal import UniversalReplyKeyboard
 from bot.core.states.common import UserState
@@ -38,7 +38,7 @@ def exit_to_navigation(chat_id: int):
     transition_need_state(
         chat_id,
         need_state=UserState.navigation,
-        text=f"Navigation\nYour balance: {f"${user_balance}" if user_balance else "NOTHING"}",
+        text=f"Your balance: {f"${user_balance}" if user_balance else "NOTHING"}",
         buttons=CommonButtons.navigation.values(),
     )
 
@@ -62,3 +62,11 @@ def transition_game_state(
         data["opponent_name"] = player.username
         data["opponent_id"] = player.chat_id
         data["ready"] = False
+
+
+def continue_game(message: types.Message):
+    bot.send_message(
+        message.chat.id,
+        text="Сыграем еще?",
+        reply_markup=UniversalReplyKeyboard(GameButtons.continue_game.values()).markup,
+    )
