@@ -91,6 +91,8 @@ def get_balance(chat_id: int) -> Optional[int]:
 
 
 def update_balance(chat_id: int, new_balance: int) -> None:
+    if new_balance < 0:
+        new_balance = 0
     logger.info(f"Updating balance for {chat_id} on ${new_balance}")
     query = f"""UPDATE users SET balance=:balance WHERE chat_id={chat_id}"""
     params = {"balance": new_balance}
