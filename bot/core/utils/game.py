@@ -129,7 +129,7 @@ class MultiplayerSession(GameSession):
             self._start_game(opponent=StringPlayer(string=opponent))
 
 
-class RobotSession(GameSession):
+class OnePlayerSession(GameSession):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._start_game()
