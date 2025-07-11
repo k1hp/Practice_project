@@ -10,7 +10,6 @@ from bot.core.states.common import UserState, KMNState
 from bot.core.utils.helpers import transition_need_state, exit_to_navigation
 from bot.core.utils.game import GameTimerSession
 from bot.config.settings import bot, logger
-from bot.core.states.common import GameState
 from bot.core.keyboards.inline import InlineDepositKeyboard
 from bot.config.config_data import (
     CommonButtons,
