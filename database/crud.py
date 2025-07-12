@@ -90,6 +90,10 @@ def get_balance(chat_id: int) -> Optional[int]:
         return int(result)
 
 
+def get_username(chat_id: int) -> Optional[str]:
+    return get_cached_parameter(chat_id, "nickname")
+
+
 def update_balance(chat_id: int, new_balance: int) -> None:
     if new_balance < 0:
         new_balance = 0

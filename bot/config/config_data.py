@@ -5,6 +5,7 @@ class CommonButtons:
         "profile": "🐵 Profile and Balance",
     }
     games = {"saper": "💣 Saper", "red_black": "❤️ Red | Black ♠️"}
+    profile = {"info": "🗃️ Данные", "replenish": "💳 Пополнить", "exit": "Выход"}
 
 
 class GameButtons:

@@ -18,4 +18,5 @@ def create_tables(engine: Engine, logger) -> None:
         for query in queries:
             connection.execute(text(query))
         connection.commit()
-    logger.info("База данных очищена и создана заново")
+    # logger.info("База данных очищена и создана заново")
+    logger.info("Tables if not exists were created")

@@ -60,6 +60,12 @@ game_handler = make_button_handlers(
     text="Choose game",
     buttons=CommonButtons.games.values(),
 )
+profile_handler = make_button_handlers(
+    button=CommonButtons.navigation["profile"],
+    need_state=UserState.profile,
+    text="Your profile",
+    buttons=CommonButtons.profile.values(),
+)
 
 
 @bot.message_handler(
@@ -68,3 +74,10 @@ game_handler = make_button_handlers(
 )
 def handle_rating(message: types.Message):
     bot.send_message(message.chat.id, text=compile_rating_string())
+
+
+@bot.message_handler(commands=["balance"])
+def handle_balance(message: types.Message):
+    bot.send_message(
+        message.chat.id, text=f"Your balance: ${get_balance(message.chat.id)}"
+    )

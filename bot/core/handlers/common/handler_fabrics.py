@@ -1,5 +1,6 @@
 from telebot.states import StatesGroup, State
 from telebot import types
+from typing import Optional
 
 from bot.config.config_data import CommonButtons, GameButtons
 from bot.config.settings import bot, logger
@@ -10,16 +11,15 @@ from bot.core.utils.helpers import exit_to_navigation
 # from bot.core.handlers.game_handlers.red_black_handlers import red_black_handler
 
 
-def make_exit_to_navigation(state: State):
+def make_exit_to_navigation(state: State, custom_button: Optional[str] = None):
     """
     Фабрика обработчиков кнопки выхода из игры
     :param state:
     :return:
     """
+    button = custom_button if custom_button else GameButtons.exit
 
-    @bot.message_handler(
-        state=state, func=lambda message: message.text == GameButtons.exit
-    )
+    @bot.message_handler(state=state, func=lambda message: message.text == button)
     def handler(message: types.Message):
         exit_to_navigation(message.chat.id)
 
@@ -29,6 +29,9 @@ def make_exit_to_navigation(state: State):
 exit_red_black_handler = make_exit_to_navigation(state=RedBlackState.balance)
 exit_saper_handler_1 = make_exit_to_navigation(state=SaperState.balance)
 exit_saper_handler_2 = make_exit_to_navigation(state=SaperState.bombs)
+exit_profile = make_exit_to_navigation(
+    state=UserState.profile, custom_button=CommonButtons.profile["exit"]
+)
 
 
 def make_start_offline_game(
