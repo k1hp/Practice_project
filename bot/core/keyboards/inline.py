@@ -1,11 +1,9 @@
 import random
 from abc import abstractmethod, ABC
-from typing import Union
 from telebot import types
 from telebot.types import InlineKeyboardButton
 
 from bot.config.config_data import BalanceData, CallbackDataString
-from bot.config.settings import bot
 from database.crud import get_balance
 
 
@@ -84,7 +82,6 @@ class InlineSaperKeyboard(CustomInlineKeyboard):
                             text="🛡️", callback_data=f"{CallbackDataString.cell}:bomb"
                         )
                     )
-                    # 💰
                 else:
                     buffer.append(
                         InlineKeyboardButton(
@@ -104,6 +101,10 @@ class InlineSaperKeyboard(CustomInlineKeyboard):
 
 
 class InlineBombsKeyboard(CustomInlineKeyboard):
+    """
+    Клавиатура для выбора количества бомб на поле.
+    """
+
     def __init__(self, row_width: int = 3, sight: int = 5):
         self._sight = sight
         self._size = sight * sight

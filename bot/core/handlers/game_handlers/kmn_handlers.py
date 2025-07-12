@@ -1,26 +1,23 @@
 from telebot import types
 from telebot.states import State
-from telebot.types import InlineKeyboardMarkup, ReplyKeyboardMarkup
+from telebot.types import ReplyKeyboardMarkup
 import time
 import threading
-from typing import Optional, Union
+from typing import Union
 
-from bot.core.keyboards.universal import UniversalReplyKeyboard
 from bot.core.states.common import UserState, KMNState
-from bot.core.utils.helpers import transition_need_state, exit_to_navigation
+from bot.core.utils.helpers import exit_to_navigation
 from bot.core.utils.game import GameTimerSession
 from bot.config.settings import bot, logger
-from bot.core.keyboards.inline import InlineDepositKeyboard
 from bot.config.config_data import (
     CommonButtons,
     CallbackDataString,
     GameButtons,
     KMN_WIN_POSITIONS,
 )
-from database.crud import get_balance, add_new_user, update_balance
+from database.crud import get_balance, update_balance
 
 
-# валидация, что user не находится в другом подборе
 @bot.message_handler(
     state=UserState.games,
     func=lambda message: message.text == CommonButtons.games["kmn"],
@@ -33,14 +30,6 @@ def game_test(message: types.Message):
         game_state=KMNState.balance,
         start_text="💥 Игра началась",
     )
-
-    # пользователь не может быть одновременно в нескольких сессиях !!
-    # пользователь не может играть если баланс < 1
-    # текущий баланс
-    # сделайте ставки (максимальная ставка - это максимум у самого бедного), чтобы ничего не повалить
-    # выводится общий банк и игра начинается, когда у каждого ready = True
-    # дальше чисто процесс игры
-    # для kmn сделать жизни
 
 
 # в фабрику передадим класс, а от него вызовем соответствующие состояния
@@ -100,7 +89,13 @@ def do_game_loop(user_id, opponent_id):
 
 
 def run_game_timer(user_id, opponent_id, timeout) -> None:
-    """Отдельный поток с таймером"""
+    """
+    Отдельный поток с таймером
+    :param user_id:
+    :param opponent_id:
+    :param timeout:
+    :return:
+    """
     stop_tread = False
     while True:
         bot.send_message(
@@ -164,7 +159,6 @@ def run_game_timer(user_id, opponent_id, timeout) -> None:
     func=lambda message: message.text in (GameButtons.kmn.values()),
 )
 def fight(message: types.Message):
-    # раздаем True false
     with bot.retrieve_data(message.chat.id) as user_data:
         user_data["ready"] = True
         opponent_id = user_data.get("opponent_id")

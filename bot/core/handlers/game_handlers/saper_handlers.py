@@ -1,27 +1,20 @@
-import random
-
 from telebot import types
-from telebot.types import InlineKeyboardMarkup, CallbackQuery, ReplyKeyboardMarkup
 
 from bot.core.keyboards.universal import UniversalReplyKeyboard
-from bot.core.states.common import UserState, KMNState, RedBlackState, SaperState
+from bot.core.states.common import SaperState
 from bot.core.utils.helpers import (
     transition_need_state,
     exit_to_navigation,
     continue_game,
 )
-from bot.core.utils.game import GameTimerSession, OnePlayerSession
 from bot.config.settings import bot, logger
 from bot.core.keyboards.inline import (
-    InlineDepositKeyboard,
     InlineBombsKeyboard,
     InlineSaperKeyboard,
 )
 from bot.config.config_data import (
-    CommonButtons,
     CallbackDataString,
     GameButtons,
-    KMN_WIN_POSITIONS,
     BalanceData,
     COEFFICIENTS,
 )

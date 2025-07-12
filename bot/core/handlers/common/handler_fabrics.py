@@ -1,14 +1,12 @@
-from telebot.states import StatesGroup, State
+from telebot.states import State
 from telebot import types
 from typing import Optional
 
 from bot.config.config_data import CommonButtons, GameButtons
-from bot.config.settings import bot, logger
+from bot.config.settings import bot
 from bot.core.states.common import RedBlackState, UserState, SaperState
 from bot.core.utils.game import OnePlayerSession
 from bot.core.utils.helpers import exit_to_navigation
-
-# from bot.core.handlers.game_handlers.red_black_handlers import red_black_handler
 
 
 def make_exit_to_navigation(state: State, custom_button: Optional[str] = None):

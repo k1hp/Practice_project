@@ -1,19 +1,12 @@
-# Получить деньги на баланс можно только если баланс менее стартового
-# по сути записываем start баланс
-from telebot import types, State
-from typing import Optional, Union
-from datetime import datetime
+from telebot import types
 
 from bot.config.settings import bot
 from bot.config.config_data import CommonButtons, BalanceData
 from bot.core.states.common import UserState
 from bot.core.utils.helpers import (
-    transition_need_state,
-    transition_remove_keyboard,
     exit_to_navigation,
 )
 from database.crud import (
-    compile_rating_string,
     get_balance,
     get_username,
     update_balance,

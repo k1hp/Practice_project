@@ -1,6 +1,5 @@
 from telebot import types, State
 from typing import Optional, Union
-from datetime import datetime
 
 from bot.config.settings import bot
 from bot.config.config_data import CommonButtons, BalanceData

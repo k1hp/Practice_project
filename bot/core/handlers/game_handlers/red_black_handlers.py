@@ -1,23 +1,18 @@
 import random
 
 from telebot import types
-from telebot.types import InlineKeyboardMarkup
 
 from bot.core.keyboards.universal import UniversalReplyKeyboard
-from bot.core.states.common import UserState, KMNState, RedBlackState
+from bot.core.states.common import RedBlackState
 from bot.core.utils.helpers import (
     transition_need_state,
     exit_to_navigation,
     continue_game,
 )
-from bot.core.utils.game import GameTimerSession, OnePlayerSession
 from bot.config.settings import bot, logger
-from bot.core.keyboards.inline import InlineDepositKeyboard
 from bot.config.config_data import (
-    CommonButtons,
     CallbackDataString,
     GameButtons,
-    KMN_WIN_POSITIONS,
     BalanceData,
 )
 from database.crud import get_balance, update_balance

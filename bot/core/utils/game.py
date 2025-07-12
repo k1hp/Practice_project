@@ -163,7 +163,6 @@ class GameTimerSession(MultiplayerSession):
         transition_game_state(
             self._player, self._game_state, self._start_text, opponent
         )
-        # super()._start_game()
         super()._provide_deposits(opponent=opponent)
         ## какая-то дополнительная логика
 
