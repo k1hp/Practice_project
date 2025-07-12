@@ -18,13 +18,16 @@ def transition_need_state(
     chat_id: int,
     need_state: State,
     text: str,
-    buttons: Union[tuple[str], list[str]],
+    buttons: Union[tuple[str], list[str]] | None = None,
+    markup: Union[types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup] | None = None,
+    delete: bool = True,
 ):
-    bot.delete_state(chat_id)
+    if delete:
+        bot.delete_state(chat_id)
     bot.set_state(chat_id, need_state)
-    bot.send_message(
-        chat_id, text=text, reply_markup=UniversalReplyKeyboard(buttons).markup
-    )
+    if markup is None:
+        markup = UniversalReplyKeyboard(buttons).markup
+    bot.send_message(chat_id, text=text, reply_markup=markup)
 
 
 def transition_remove_keyboard(message: types.Message, need_state: State, text: str):
@@ -38,7 +41,7 @@ def exit_to_navigation(chat_id: int):
     transition_need_state(
         chat_id,
         need_state=UserState.navigation,
-        text=f"Your balance: {f"${user_balance}" if user_balance else "NOTHING"}",
+        text=f"Your balance: {f"${user_balance}" if user_balance else "$0"}",
         buttons=CommonButtons.navigation.values(),
     )
 

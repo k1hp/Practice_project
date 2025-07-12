@@ -38,6 +38,16 @@ def handle_navigation(message: types.Message):
         transition_need_state(
             message.chat.id,
             need_state=UserState.navigation,
-            text=f"Navigation\nYour balance: {f"${user_balance}" if user_balance else "NOTHING"}",
+            text=f"Navigation\nYour balance: {f"${user_balance}" if user_balance else "$0"}",
             buttons=CommonButtons.navigation.values(),
         )
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "ignore")
+def ignore_callback(call):
+    """
+    Обработка пустых кнопок
+    :param call:
+    :return:
+    """
+    bot.answer_callback_query(call.id)  # Просто закрываем уведомление

@@ -5,6 +5,7 @@ class UserState(StatesGroup):
     """
     Состояния навигации.
     """
+
     navigation = State()
     games = State()
     profile = State()
@@ -15,6 +16,7 @@ class KMNState(StatesGroup):
     При наследовании от общего класса появляется непредсказуемость.
     Состояния для игры Камни Ножницы Бумага
     """
+
     balance = State()
     game_process = State()
     finish = State()  ## нужен или нет
@@ -37,4 +39,5 @@ class SaperState(StatesGroup):
     """
 
     balance = State()
+    bombs = State()
     game_process = State()

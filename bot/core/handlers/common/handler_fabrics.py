@@ -10,15 +10,15 @@ from bot.core.utils.helpers import exit_to_navigation
 # from bot.core.handlers.game_handlers.red_black_handlers import red_black_handler
 
 
-def make_exit_to_navigation(state_class: StatesGroup):
+def make_exit_to_navigation(state: State):
     """
     Фабрика обработчиков кнопки выхода из игры
-    :param state_class:
+    :param state:
     :return:
     """
 
     @bot.message_handler(
-        state=state_class.balance, func=lambda message: message.text == GameButtons.exit
+        state=state, func=lambda message: message.text == GameButtons.exit
     )
     def handler(message: types.Message):
         exit_to_navigation(message.chat.id)
@@ -26,8 +26,9 @@ def make_exit_to_navigation(state_class: StatesGroup):
     return handler
 
 
-exit_red_black_handler = make_exit_to_navigation(state_class=RedBlackState)
-exit_saper_handler = make_exit_to_navigation(state_class=SaperState)
+exit_red_black_handler = make_exit_to_navigation(state=RedBlackState.balance)
+exit_saper_handler_1 = make_exit_to_navigation(state=SaperState.balance)
+exit_saper_handler_2 = make_exit_to_navigation(state=SaperState.bombs)
 
 
 def make_start_offline_game(

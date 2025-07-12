@@ -1,60 +1,32 @@
+import random
+from abc import abstractmethod, ABC
 from typing import Union
 from telebot import types
+from telebot.types import InlineKeyboardButton
 
 from bot.config.config_data import BalanceData, CallbackDataString
 from bot.config.settings import bot
 from database.crud import get_balance
 
 
-# class InlineDepositKeyboards:
-#     def __init__(self, player_chat_id: int, opponent_chat_id: int) -> None:
-#         player_balance, opponent_balance = self._get_balances(
-#             player_chat_id, opponent_chat_id
-#         )
-#         self._player_markup = types.InlineKeyboardMarkup(
-#             keyboard=self._get_buttons_by_balance(player_balance)
-#         )
-#         self._opponent_markup = types.InlineKeyboardMarkup(
-#             keyboard=self._get_buttons_by_balance(opponent_balance)
-#         )
-#
-#     @staticmethod
-#     def _get_balances(user_id: int, opp_id: int) -> tuple[int, int]:
-#         user_balance = get_balance(chat_id=user_id)
-#         opponent_balance = get_balance(chat_id=opp_id)
-#         print(user_balance, opponent_balance)
-#         return user_balance, opponent_balance
-#
-#     @staticmethod
-#     def _get_buttons_by_balance(
-#         balance: int,
-#     ) -> list[list[types.InlineKeyboardButton]]: ...
-#
-#     @property
-#     def player_markup(self):
-#         return self._player_markup
-#
-#     @property
-#     def opponent_markup(self):
-#         return self._opponent_markup
+class CustomInlineKeyboard(ABC, types.InlineKeyboardMarkup):
+    @abstractmethod
+    def _create(self) -> list[list[types.InlineKeyboardButton]]:
+        pass
 
 
-class InlineDepositKeyboard(types.InlineKeyboardMarkup):
+class InlineDepositKeyboard(CustomInlineKeyboard):
     def __init__(self, chat_id: int) -> None:
-        balance = get_balance(chat_id=chat_id)
-        super().__init__(keyboard=self._get_buttons_by_balance(balance))
+        self._balance = get_balance(chat_id=chat_id)
+        super().__init__(keyboard=self._create())
+
+    def _create(self):
+        return self._get_buttons_by_balance(self._balance)
 
     @staticmethod
     def _get_buttons_by_balance(
         balance: int,
     ) -> list[list[types.InlineKeyboardButton]]:
-        # придумать что с offline и как тогда пополнять баланс
-        # последняя all in
-        # if balance in range(BalanceData.minimum, BalanceData.middle):
-        #     return [[types.InlineKeyboardButton(text=f"${balance}", callback_data=f"deposit:{balance}")]]
-        # elif abs(BalanceData.minimum - balance) <= 250:
-        #     buttons = [[BalanceData.minimum,], [], []]
-        # else:
         result = []
         deposits = []
         for stage in (
@@ -81,5 +53,91 @@ class InlineDepositKeyboard(types.InlineKeyboardMarkup):
                     callback_data=f"{CallbackDataString.deposit}:{balance}",
                 ),
             ]
+        )
+        return result
+
+
+class InlineSaperKeyboard(CustomInlineKeyboard):
+    """
+    Создает поле (по умолчанию 5 x 5)
+    С указанным количеством бомб
+    Для игры в сапера.
+    """
+
+    def __init__(self, bombs_count: int, sight: int = 5):
+        self._sight = sight
+        self._bombs_count = bombs_count
+        super().__init__(keyboard=self._create())
+
+    def _create(self) -> list[list[types.InlineKeyboardButton]]:
+        result = []
+        counter = 0
+        bomb_numbers: list[int] = self._generate_bomb_numbers(
+            self._bombs_count, self._sight
+        )
+        for high in range(0, self._sight):
+            buffer = []
+            for length in range(0, self._sight):
+                if counter in bomb_numbers:
+                    buffer.append(
+                        InlineKeyboardButton(
+                            text="🛡️", callback_data=f"{CallbackDataString.cell}:bomb"
+                        )
+                    )
+                    # 💰
+                else:
+                    buffer.append(
+                        InlineKeyboardButton(
+                            text="🛡️",
+                            callback_data=f"{CallbackDataString.cell}:{counter}",
+                        )
+                    )
+                counter += 1
+            result.append(buffer)
+
+        return result
+
+    @staticmethod
+    def _generate_bomb_numbers(bombs_count: int, sight: int) -> list[int]:
+        numbers: tuple[int] = tuple(range(sight * sight))
+        return random.choices(numbers, k=bombs_count)
+
+
+class InlineBombsKeyboard(CustomInlineKeyboard):
+    def __init__(self, row_width: int = 3, sight: int = 5):
+        self._sight = sight
+        self._size = sight * sight
+        self._row_width = row_width
+        super().__init__(keyboard=self._create())
+
+    def _create(self) -> list[list[types.InlineKeyboardButton]]:
+        result = []
+        counter = 0
+        buffer = []
+        for index in range(self._size):
+            if counter == self._row_width:
+                result.append(buffer)
+                buffer = []
+                counter = 0
+            number = 2**index
+
+            if number >= self._size:
+                result.append(buffer)
+                break
+            else:
+                buffer.append(
+                    InlineKeyboardButton(
+                        text=f"x{number}",
+                        callback_data=f"{CallbackDataString.bombs}:{number}",
+                    )
+                )
+            counter += 1
+        result.append(
+            [
+                InlineKeyboardButton(
+                    text=f"x{self._size - 1}",
+                    callback_data=f"{CallbackDataString.bombs}:{self._size - 1}",
+                )
+            ],
         )
         return result
