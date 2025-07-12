@@ -25,6 +25,9 @@ def transition_need_state(
     if delete:
         bot.delete_state(chat_id)
     bot.set_state(chat_id, need_state)
+    if buttons is None:
+        bot.send_message(chat_id, text=text)
+        return
     if markup is None:
         markup = UniversalReplyKeyboard(buttons).markup
     bot.send_message(chat_id, text=text, reply_markup=markup)
@@ -50,12 +53,8 @@ def transition_game_state(
     player: "Player", need_state: State, text: str, opponent: "Player"
 ) -> None:  # кнопка выход из игры
     logger.info(f"player - {player}\nopponent - {opponent}")
-    transition_need_state(
-        player.chat_id, need_state=need_state, text=text, buttons=("Выход_1",)
-    )
-    transition_need_state(
-        opponent.chat_id, need_state=need_state, text=text, buttons=("Выход_2",)
-    )
+    transition_need_state(player.chat_id, need_state=need_state, text=text)
+    transition_need_state(opponent.chat_id, need_state=need_state, text=text)
     with bot.retrieve_data(player.chat_id) as data:
         data["opponent_name"] = opponent.username
         data["opponent_id"] = opponent.chat_id

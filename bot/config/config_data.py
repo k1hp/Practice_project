@@ -4,7 +4,11 @@ class CommonButtons:
         "rating": "🏆 Rating",
         "profile": "🐵 Profile and Balance",
     }
-    games = {"saper": "💣 Saper", "red_black": "❤️ Red | Black ♠️"}
+    games = {
+        "saper": "💣 Saper",
+        "red_black": "❤️ Red | Black ♠️",
+        "kmn": "🗿✂️📜 (Multiplayer test)",
+    }
     profile = {"info": "🗃️ Данные", "replenish": "💳 Пополнить", "exit": "Выход"}
 
 

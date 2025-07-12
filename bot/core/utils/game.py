@@ -121,6 +121,9 @@ class MultiplayerSession(GameSession):
             redis_sessions.rpush(
                 "session:" + self._game_name, self._player.pack_player_string()
             )
+            self._bot.send_message(
+                self._message.chat.id, text="Вы были добавлены в очередь."
+            )
         elif len(session) >= 1:
             opponent, *new_session = session
             redis_sessions.delete("session:" + self._game_name)

@@ -21,24 +21,18 @@ from database.crud import get_balance, add_new_user, update_balance
 
 
 # валидация, что user не находится в другом подборе
-@bot.message_handler(commands=["game_test"])
+@bot.message_handler(
+    state=UserState.games,
+    func=lambda message: message.text == CommonButtons.games["kmn"],
+)
 def game_test(message: types.Message):
     GameTimerSession(
         bot=bot,
         message=message,
-        game_redis_name="test+game",
+        game_redis_name="kmn",
         game_state=KMNState.balance,
-        start_text="Start game",
+        start_text="💥 Игра началась",
     )
-    # with bot.retrieve_data(message.chat.id) as data:
-    #     opponent_id = data.get("opponent_id")
-    # keyboards = InlineDepositKeyboards(message.chat.id, opponent_id)
-    # bot.send_message(
-    #     message.chat.id, text="Сделайте ставку", reply_markup=keyboards.player_markup
-    # )
-    # bot.send_message(
-    #     opponent_id, text="Сделайте ставку", reply_markup=keyboards.opponent_markup
-    # )
 
     # пользователь не может быть одновременно в нескольких сессиях !!
     # пользователь не может играть если баланс < 1
@@ -92,32 +86,12 @@ def insert_users_in_game(
 
 
 def do_game_loop(user_id, opponent_id):
-    # bot.set_state(user_id, KMNState.game_process)
-    # bot.set_state(opponent_id, KMNState.game_process)
-    # # Сохраняем данные перед запуском потока
-    # with bot.retrieve_data(user_id) as user_data:
-    #     user_data["ready"] = False
-    #     user_data["lives"] = 2  # get("lives", 2)
-    #
-    #     # bot.storage.set_data(user_id, user_data)
-    #     # bot.storage.set_data(opponent_id, opponent_data)
-    # with bot.retrieve_data(opponent_id) as opponent_data:
-    #     opponent_data["ready"] = False
-    #     opponent_data["lives"] = 2
-    #
-    # markup = ReplyKeyboardMarkup()
-    # markup.add(*GameButtons.kmn.values())
-    #
-    # bot.send_message(
-    #     user_id, "Игра началась! У вас 10 секунд чтобы сделать ход", reply_markup=markup
-    # )
-    # bot.send_message(
-    #     opponent_id,
-    #     "Игра началась! У вас 10 секунд чтобы сделать ход",
-    #     reply_markup=markup,
-    # )
-
-    # Запускаем поток с таймером
+    """
+    Запускаем поток с таймером
+    :param user_id:
+    :param opponent_id:
+    :return:
+    """
     game_thread = threading.Thread(
         target=run_game_timer, args=(user_id, opponent_id, 10)
     )
@@ -128,30 +102,35 @@ def do_game_loop(user_id, opponent_id):
 def run_game_timer(user_id, opponent_id, timeout) -> None:
     """Отдельный поток с таймером"""
     stop_tread = False
-    reward = 0
     while True:
         bot.send_message(
             user_id,
-            text="Сделайте ход в течении 10 секунд.",
+            text="⏱️ Сделайте ход в течении 10 секунд.",
         )
         bot.send_message(
             opponent_id,
-            text="Сделайте ход в течении 10 секунд.",
+            text="⏱️ Сделайте ход в течении 10 секунд.",
         )
         time.sleep(timeout)
 
-        # Получаем свежие данные
         with (
             bot.retrieve_data(user_id) as user_data,
             bot.retrieve_data(opponent_id) as opponent_data,
         ):
             # Проверяем готовность
-            if not user_data.get("ready", False):
+            if not user_data.get("ready", False) and not opponent_data.get(
+                "ready", False
+            ):
+                send_draw(user_id, opponent_id)
+                user_data["lives"] -= 1
+                opponent_data["lives"] -= 1
+
+            elif not user_data.get("ready", False):
                 send_round_results(opponent_id, user_id)
                 print("user loose")
                 user_data["lives"] -= 1
 
-            if not opponent_data.get("ready", False):
+            elif not opponent_data.get("ready", False):
                 send_round_results(user_id, opponent_id)
                 print("opponent loose")
                 opponent_data["lives"] -= 1
@@ -160,32 +139,24 @@ def run_game_timer(user_id, opponent_id, timeout) -> None:
             user_data["ready"] = False
             opponent_data["ready"] = False
 
-            if user_data["lives"] <= 0:
+            if user_data["lives"] == 0 and opponent_data["lives"] == 0:
+                send_draw(user_id, opponent_id)
                 stop_tread = True
-                # reward = user_data["deposit"]
-                # winner_id = opponent_id
 
-                # send_results(opponent_id, user_data)
-
-                # update balance у обоих
-                # back to lobby функция
-            elif opponent_data["lives"] <= 0:
+            elif user_data["lives"] == 0:
                 stop_tread = True
-                # reward = opponent_data["deposit"]
-                # winner_id = user_id
+                send_results(user_id, opponent_id)
+                update_balances(user_id, user_data, opponent_id)
+
+            elif opponent_data["lives"] == 0:
+                stop_tread = True
+                send_results(opponent_id, user_id)
+                update_balances(opponent_id, opponent_data, user_id)
 
         if stop_tread:
-            # update_balance(
-            #     opponent_id if user_id == winner_id else user_id,
-            #     new_balance=get_balance(user_id) - reward,
-            # )
-            # update_balance(winner_id, new_balance=get_balance(opponent_id) + reward)
             exit_to_navigation(user_id)
             exit_to_navigation(opponent_id)
             return
-            # то же самое
-
-    # do_game_loop(user_id, opponent_id)
 
 
 @bot.message_handler(
@@ -230,15 +201,21 @@ def damage_looser(user_data: tuple[dict, str], opponent_data: tuple[dict, str]) 
 
 
 def send_round_results(winner_id, looser_id):
-    bot.send_message(winner_id, text="В данном раунде вы победили")
-    bot.send_message(looser_id, text="В данном раунде вы проиграли")
+    bot.send_message(winner_id, text="🎉 В данном раунде вы победили")
+    bot.send_message(looser_id, text="☠️ В данном раунде вы проиграли")
 
 
 def send_results(winner_id, looser_id):
-    bot.send_message(winner_id, text="Вы победили!")
-    bot.send_message(looser_id, text="Эх, проиграли!")
+    bot.send_message(winner_id, text="🏆 Вы победили в игре!")
+    bot.send_message(looser_id, text="💢 Эх, бывает! ")
 
 
 def send_draw(user_id, opponent_id):
-    bot.send_message(user_id, text="В данном раунде: Ничья")
-    bot.send_message(opponent_id, text="В данном раунде: Ничья")
+    bot.send_message(user_id, text="Ничья")
+    bot.send_message(opponent_id, text="Ничья")
+
+
+def update_balances(winner_id: int, winner_data: dict, looser_id: int) -> None:
+    jackpot = winner_data.get("deposit", 0)
+    update_balance(winner_id, get_balance(winner_id) + jackpot)
+    update_balance(looser_id, get_balance(looser_id) - jackpot)
