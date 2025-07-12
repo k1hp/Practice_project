@@ -73,13 +73,13 @@ def get_cached_parameter(
 ) -> Optional[str]:
     redis_data = redis_cache.get(f"{parameter}:{chat_id}")
     if redis_data:
-        return redis_data  # decode должен быть в конфиге redis
+        return redis_data
     query = f"""SELECT {parameter} FROM {table} WHERE chat_id = {chat_id}"""
     with engine.connect() as connection:
         result = connection.execute(text(query)).first()
         if not result:
             return None
-        # redis_cache.set(f"{parameter}:{chat_id}", value=result[0])
+
         update_cached_parameter(chat_id, parameter, result[0])
         return result[0]
 

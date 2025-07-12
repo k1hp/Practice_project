@@ -25,7 +25,7 @@ def transition_need_state(
     if delete:
         bot.delete_state(chat_id)
     bot.set_state(chat_id, need_state)
-    if buttons is None:
+    if buttons is None and markup is None:
         bot.send_message(chat_id, text=text)
         return
     if markup is None:
